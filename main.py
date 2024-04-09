@@ -17,12 +17,6 @@ def draw_chat(stdscr, chat_client):
     stdscr.clear()
     stdscr.refresh()
 
-    # Start colors in curses
-    curses.start_color()
-    curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)
-    curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
-    curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
-
     # Loop where k is the last character pressed
     while (k != ord('q')):
 
@@ -84,19 +78,28 @@ def draw_login(stdscr):
     stdscr.clear()
     stdscr.refresh()
 
+    height, width = stdscr.getmaxyx()
+    title = "Login to Super Secret Chat"[
+            :width - 1]
+    stdscr.addstr(0, (width - len(title)) // 2, title)
+
     # Ask for username
-    stdscr.addstr(0, 0, "Enter your username (hit 'q' to quit): ")
+    stdscr.addstr(2, 0, "Username: ")
     curses.echo()  # Turn on echoing to show user input
-    username = stdscr.getstr(0, len(
-        "Enter your username (hit 'q' to quit): "), max_input_length).decode(encoding="utf-8")
+    username = stdscr.getstr(2, len(
+        "Username: "), max_input_length).decode(encoding="utf-8")
     curses.noecho()  # Turn off echoing
+
     if username == 'q':
         sys.exit()
 
-    # Display user input
-    stdscr.clear()
-    stdscr.addstr(0, 0, f"Hello, {username}!")
-    stdscr.refresh()
+    # Ask for password
+    stdscr.addstr(3, 0, "Password: ")
+    password = stdscr.getstr(3, len(
+        "Password: "), max_input_length).decode(encoding="utf-8")
+
+    if password == 'q':
+        sys.exit()
 
     # Cleanup
     curses.endwin()
