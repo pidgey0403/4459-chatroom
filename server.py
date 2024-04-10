@@ -9,37 +9,24 @@ from pymongo import MongoClient
 # Define the chat service
 
 
-class ChatService(chat_pb2_grpc.ChatServiceServicer):
-    chatroom_id = 0
-    
+class ChatService(chat_pb2_grpc.ChatServiceServicer):    
     def __init__(self):
-        self.messages = []
         self.mongo_client = MongoClient('localhost', 27017)
         self.db = self.mongo_client.chat_db
+        
 
-    def ChatStream(self, request_iterator, context):
-        lastindex = 0
-        # For every client a infinite loop starts (in gRPC's own managed thread)
+    def ChatStream(self, request_iterator, context):        
+        lastindex = 0  # Initialize lastindex to the length of chat history
+
         while True:
             # Check if there are any new messages
-            while len(self.messages) > lastindex:
-                n = self.messages[lastindex]
-                lastindex += 1
-                yield n
-        
-        # chat_history = self.get_chat_history()
-        # while True:
-        #     # Check if there are any new messages
-        #     while len(chat_history) > lastindex:
-        #         n = self.chat_history[lastindex]
-        #         lastindex += 1
-        #         yield n
-                
+            while len(self.get_chat_history()) > lastindex:
+                n = self.get_chat_history()[lastindex]
+                lastindex+=1
+                yield n     
                 
 
-    def SendMessage(self, request, context):
-        self.messages.append(request)
-        
+    def SendMessage(self, request, context):        
         self.save_history(request)
         
         print(f"{request.username}: {request.message}")
